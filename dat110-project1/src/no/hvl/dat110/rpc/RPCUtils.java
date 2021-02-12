@@ -1,5 +1,6 @@
 package no.hvl.dat110.rpc;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import no.hvl.dat110.TODO;
@@ -17,9 +18,13 @@ public class RPCUtils {
 
 		// TODO: marshall RPC identifier and string into byte array
 
-		if (true) {
-			throw new UnsupportedOperationException(TODO.method());
-		}
+		byte[] stringAsBytes = str.getBytes();
+		
+		encoded = new byte[stringAsBytes.length+1];
+		
+		encoded[0] = rpcid;
+		
+		System.arraycopy(stringAsBytes, 0, encoded, 1, stringAsBytes.length);
 
 		return encoded;
 	}
@@ -29,10 +34,12 @@ public class RPCUtils {
 		String decoded;
 
 		// TODO: unmarshall String contained in data into decoded
+		
+		byte[] withoutID = new byte[data.length-1];
+				
+		System.arraycopy(data, 1, withoutID, 0, withoutID.length);
 
-		if (true) {
-			throw new UnsupportedOperationException(TODO.method());
-		}
+		decoded = new String(withoutID);
 
 		return decoded;
 	}
@@ -43,9 +50,9 @@ public class RPCUtils {
 
 		// TODO: marshall RPC identifier in case of void type
 
-		if (true) {
-			throw new UnsupportedOperationException(TODO.method());
-		}
+		encoded = new byte[1]; 
+				
+		encoded[0] = rpcid;
 
 		return encoded;
 
@@ -82,11 +89,20 @@ public class RPCUtils {
 		byte[] encoded;
 
 		// TODO: marshall RPC identifier and string into byte array
-
-		if (true) {
-			throw new UnsupportedOperationException(TODO.method());
-		}
-
+		
+		byte[] intAsBytes = new byte[4];
+		
+		//Omgjør int x til en byte sekvens
+		intAsBytes = ByteBuffer.allocate(4).putInt(x).array();
+		
+		encoded = new byte[5];
+		
+		//Larger rpcid som første byte 
+		encoded[0] = rpcid;
+		
+		//Kopierer intAsBytes over på encoded
+		System.arraycopy(intAsBytes, 0, encoded, 1, 4);
+				
 		return encoded;
 	}
 
@@ -96,9 +112,13 @@ public class RPCUtils {
 
 		// TODO: unmarshall integer contained in data
 
-		if (true) {
-			throw new UnsupportedOperationException(TODO.method());
-		}
+		byte[] intAsBytes = new byte[4];
+		
+		//Kopierer bytesekvens fra data
+		System.arraycopy(data, 1, intAsBytes, 0, 4);
+		
+		//Lagrer bytesekvens fra data som int
+		decoded = ByteBuffer.wrap(intAsBytes).getInt();
 
 		return decoded;
 
