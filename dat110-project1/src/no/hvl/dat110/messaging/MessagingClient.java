@@ -28,16 +28,13 @@ public class MessagingClient {
 		// create connection object
 		
 		try {
-			clientSocket = new Socket(MessageConfig.MESSAGINGHOST, MessageConfig.MESSAGINGPORT);
+			clientSocket = new Socket(server, port);
 			connection = new Connection(clientSocket);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 
 		return connection;
 	}

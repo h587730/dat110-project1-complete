@@ -24,55 +24,44 @@ public class RPCServer {
 		// the stop RPC methods is built into the server
 		services.put((int)RPCCommon.RPIDSTOP,new RPCServerStopImpl());
 	}
-	
+
 	public void run() {
-		
+
 		System.out.println("RPC SERVER RUN - Services: " + services.size());
-		
-		connection = msgserver.accept(); 
-		
+
+		connection = msgserver.accept();
+
 		System.out.println("RPC SERVER ACCEPTED");
-		
+
 		boolean stop = false;
-		
+
 		while (!stop) {
-	    
-		   int rpcid;
-		   
-		   // TODO
-		   // - receive message containing RPC request
-		   Message message = connection.receive();
-		   
-		   // - find the identifier for the RPC methods to invoke
-		   rpcid = message.getData()[0];
-		   
-		   // - lookup the method to be invoked
-		   
-		   RPCImpl implementedMethod = services.get(rpcid);
-				   
-		   // - invoke the method
-		   
-		   byte [] replyToClient = implementedMethod.invoke(message.getData());
-			
-		   // - send back message containing RPC reply
-			
-		   connection.send(new Message(replyToClient));
-		  
-		   
-		   if (rpcid == RPCCommon.RPIDSTOP) {
-			   stop = true;
-		   }
+
+			// - receive message containing RPC request
+			Message message = connection.receive();
+			// - find the identifier for the RPC methods to invoke
+			int rpcid = message.getData()[0];
+			// - lookup the method to be invoked
+			RPCImpl method = services.get(rpcid);
+			if (method == null) continue;
+			// - invoke the method
+			byte[] reply = method.invoke(message.getData());
+			// - send back message containing RPC reply
+			connection.send(new Message(reply));
+
+			if (rpcid == RPCCommon.RPIDSTOP) {
+				stop = true;
+			}
 		}
-	
 	}
-	
+
 	public void register(int rpcid, RPCImpl impl) {
 		services.put(rpcid, impl);
 	}
-	
+
 	public void stop() {
 		connection.close();
 		msgserver.stop();
-		
+
 	}
 }
